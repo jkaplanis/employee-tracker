@@ -13,16 +13,16 @@ CREATE TABLE employee (
 );
 
 CREATE TABLE role (
-  id INT NOT NULL,
+  role_id INT NOT NULL,
   title VARCHAR(30) NULL,
   salary DECIMAL(10,2) NULL,
   department_id INT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (role_id)
 );
 
 CREATE TABLE department (
-  id INT NOT NULL,
-  name VARCHAR(30) NULL,
-  PRIMARY KEY (id)
+  department_id INT NOT NULL,
+  department_name VARCHAR(30) NULL,
+  PRIMARY KEY (department_id)
 );
 
