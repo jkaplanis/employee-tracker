@@ -9,20 +9,22 @@ CREATE TABLE employee (
   last_name VARCHAR(30) NULL,
   role_id INT NULL,
   manager_id INT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  FOREIGN KEY(manager_id) REFERENCES role(id)
 );
 
 CREATE TABLE role (
-  role_id INT NOT NULL,
+  id INT NOT NULL,
   title VARCHAR(30) NULL,
   salary DECIMAL(10,2) NULL,
   department_id INT NULL,
-  PRIMARY KEY (role_id)
+  PRIMARY KEY (id),
+  FOREIGN KEY(department_id) REFERENCES department(id)
 );
 
 CREATE TABLE department (
-  department_id INT NOT NULL,
+  id INT NOT NULL,
   department_name VARCHAR(30) NULL,
-  PRIMARY KEY (department_id)
+  PRIMARY KEY (id)
 );
 
