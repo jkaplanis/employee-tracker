@@ -223,26 +223,33 @@ const addEmployees = () => {
 
 // view department
 const viewDepartments = () => {
-  return connection.query("SELECT * FROM department", (err, results) => {
-    if (err) {
-      throw err;
+  return connection.query(
+    "SELECT department_name FROM department",
+    (err, results) => {
+      if (err) {
+        throw err;
+      }
+      const table = cTable.getTable(results);
+      console.log(table);
+      return start();
     }
-    const table = cTable.getTable(results);
-    console.log(table);
-    return start();
-  });
+  );
 };
 
 // view roles
 const viewRoles = () => {
-  return connection.query("SELECT * FROM role", (err, results) => {
-    if (err) {
-      throw err;
+  return connection.query(
+    `SELECT role.title, role.salary, department.department_name 
+    FROM role JOIN department ON role.department_id = department.id`,
+    (err, results) => {
+      if (err) {
+        throw err;
+      }
+      const table = cTable.getTable(results);
+      console.log(table);
+      return start();
     }
-    const table = cTable.getTable(results);
-    console.log(table);
-    return start();
-  });
+  );
 };
 
 // view employees
