@@ -42,13 +42,13 @@ const start = () => {
       if (answer.action === "Add departments") {
         return addDepartments();
       } else if (answer.action === "Add roles") {
-        return view();
+        return addRoles();
       } else if (answer.action === "Add employees") {
-        return update();
+        return addEmployees();
       } else if (answer.action === "View departments") {
         return viewDepartments();
       } else if (answer.action === "View roles") {
-        return update();
+        return viewRoles();
       } else if (answer.action === "Update employee roles") {
         return update();
       } else {
@@ -87,9 +87,108 @@ const addDepartments = () => {
     });
 };
 
+// add roles
+const addRoles = () => {
+  return connection.query("SELECT * FROM department", (err, results) => {
+    if (err) {
+      throw err;
+    }
+    const departmentNames = results.map(row => row.department_name);
+    return inquirer
+      .prompt([
+        {
+          name: "roleTitle",
+          type: "input",
+          message: "What is the name of the role?"
+        },
+        {
+          name: "salary",
+          type: "input",
+          message: "What is role's salary?",
+          validate: value => (isNaN(value) ? "Enter a number." : true)
+        },
+        {
+          name: "departmentName",
+          type: "list",
+          message: "Which department does this role belong to?",
+          choices: departmentNames
+        }
+      ])
+      .then(answer => {
+        const matchedDept = results.find(
+          row => row.department_name === answer.departmentName
+        );
+        return connection.query(
+          "INSERT INTO role SET ?",
+          {
+            title: answer.roleTitle,
+            salary: answer.salary,
+            department_id: matchedDept.id
+          },
+          err => {
+            if (err) {
+              throw err;
+            }
+            console.log("Your role was added successfully!");
+            // re-prompt the user for their next action
+            return start();
+          }
+        );
+      });
+  });
+};
+
+// const addEmployees = () => {
+//   return connection.query("SELECT * FROM department AND role", (err, results) => {
+//     if (err) {
+//       throw err;
+//     }
+//     const departmentNames = results.map(row => row.department_name);
+//     const roleNames = results.map(row => row.title);
+
+//     return inquirer
+//     .prompt([
+//       {
+//         name: "employeeFirst",
+//         type: "input",
+//         message: "What is the employees first name?"
+//       },
+//       {
+//         name: "employeeLast",
+//         type: "input",
+//         message: "What is the employees last name?"
+//       },
+//       {
+//         name: "salary",
+//         type: "input",
+//         message: "What is role's salary?",
+//         validate: value => (isNaN(value) ? "Enter a number." : true)
+//       },
+//       {
+//         name: "departmentName",
+//         type: "list",
+//         message: "Which department does this role belong to?",
+//         choices: departmentNames
+//       }
+//     ])
+//   });
+// }
+
 // view department
 const viewDepartments = () => {
   return connection.query("SELECT * FROM department", (err, results) => {
+    if (err) {
+      throw err;
+    }
+    const table = cTable.getTable(results);
+    console.log(table);
+    return start();
+  });
+};
+
+// view roles
+const viewRoles = () => {
+  return connection.query("SELECT * FROM role", (err, results) => {
     if (err) {
       throw err;
     }
