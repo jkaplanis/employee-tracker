@@ -12,7 +12,13 @@ VALUES (1, "John", "Kaplanis", 1, 4), (2, "Amber", "Kaplanis", 2, 1),
 (5, "James ", "Benson", 5, 3), (6, "Dave", "Smith", 6, 5),
 (7, "Rory", "Bloch", 8, 7), (8, "Joe", "Cosmano", 4, 3);
 
-SELECT employee.id, employee.first_name, employee.last_name, 
-role.title, role.salary, department.department_name,  FROM employee 
-JOIN role ON employee.role_id = role.role_id 
-JOIN department ON role.department_id = department.department_id;
+
+-- produces a report that includes the managers name next to who they manage, ordered by
+-- employee id. 
+SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.department_name, 
+managers.first_name as manager_first_name, managers.last_name as manager_last_name 
+FROM employee 
+JOIN employee as managers ON employee.manager_id = managers.id
+JOIN role ON employee.role_id = role.id 
+JOIN department ON role.department_id = department.id
+ORDER BY employee.id;

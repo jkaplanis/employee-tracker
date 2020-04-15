@@ -3,14 +3,10 @@ CREATE database employeeDB;
 
 USE employeeDB;
 
-CREATE TABLE employee (
+CREATE TABLE department (
   id INT NOT NULL,
-  first_name VARCHAR(30) NULL,
-  last_name VARCHAR(30) NULL,
-  role_id INT NULL,
-  manager_id INT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY(manager_id) REFERENCES role(id)
+  department_name VARCHAR(30) NULL,
+  PRIMARY KEY (id)
 );
 
 CREATE TABLE role (
@@ -22,9 +18,12 @@ CREATE TABLE role (
   FOREIGN KEY(department_id) REFERENCES department(id)
 );
 
-CREATE TABLE department (
+CREATE TABLE employee (
   id INT NOT NULL,
-  department_name VARCHAR(30) NULL,
-  PRIMARY KEY (id)
+  first_name VARCHAR(30) NULL,
+  last_name VARCHAR(30) NULL,
+  role_id INT NULL,
+  manager_id INT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(manager_id) REFERENCES role(id)
 );
-
