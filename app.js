@@ -50,6 +50,8 @@ const start = () => {
         return viewDepartments();
       } else if (answer.action === "View roles") {
         return viewRoles();
+      } else if (answer.action === "View employees") {
+        return viewEmployees();
       } else if (answer.action === "Update employee roles") {
         return update();
       } else {
@@ -241,4 +243,25 @@ const viewRoles = () => {
     console.log(table);
     return start();
   });
+};
+
+// view employees
+const viewEmployees = () => {
+  return connection.query(
+    `SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.department_name, 
+    concat(managers.first_name, " ", managers.last_name) as manager
+    FROM employee 
+    JOIN employee as managers ON employee.manager_id = managers.id
+    JOIN role ON employee.role_id = role.id 
+    JOIN department ON role.department_id = department.id
+    ORDER BY employee.id`,
+    (err, results) => {
+      if (err) {
+        throw err;
+      }
+      const table = cTable.getTable(results);
+      console.log(table);
+      return start();
+    }
+  );
 };
