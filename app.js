@@ -53,7 +53,7 @@ const start = () => {
       } else if (answer.action === "View employees") {
         return viewEmployees();
       } else if (answer.action === "Update employee roles") {
-        return update();
+        return updateEmployeeRoles();
       } else {
         connection.end();
       }
@@ -271,4 +271,70 @@ const viewEmployees = () => {
       return start();
     }
   );
+};
+
+// Update employee roles
+const updateEmployeeRoles = () => {
+  connection.query("SELECT title, id FROM role", (err, roles) => {
+    if (err) {
+      throw err;
+    }
+    const roleNames = roles.map(row => {
+      return {
+        name: row.title,
+        value: row.id
+      };
+    });
+
+    connection.query(
+      "SELECT id, concat(first_name, ' ', last_name) AS name FROM employee",
+      (err, employees) => {
+        if (err) {
+          throw err;
+        }
+        const employeeNames = employees.map(row => {
+          return {
+            name: row.name,
+            value: row.id
+          };
+        });
+        return inquirer
+          .prompt([
+            {
+              name: "employeeID",
+              type: "list",
+              message: "Which employee would you like to update?",
+              choices: employeeNames
+            },
+            {
+              name: "roleID",
+              type: "list",
+              message: "What is the employee's new role?",
+              choices: roleNames
+            }
+          ])
+          .then(answer => {
+            return connection.query(
+              "UPDATE employee SET ? WHERE ?",
+              [
+                {
+                  role_id: answer.roleID
+                },
+                {
+                  id: answer.employeeID
+                }
+              ],
+              err => {
+                if (err) {
+                  throw err;
+                }
+                console.log("Your employee role was updated successfully!");
+                // re-prompt the user for their next action
+                return start();
+              }
+            );
+          });
+      }
+    );
+  });
 };
