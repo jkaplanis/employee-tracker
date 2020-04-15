@@ -34,7 +34,8 @@ const start = () => {
         "View departments",
         "View roles",
         "View employees",
-        "Update employee roles"
+        "Update employee roles",
+        "Exit"
       ]
     })
     .then(answer => {
@@ -93,7 +94,12 @@ const addRoles = () => {
     if (err) {
       throw err;
     }
-    const departmentNames = results.map(row => row.department_name);
+    const departmentNames = results.map(row => {
+      return {
+        name: row.department_name,
+        value: row.id
+      };
+    });
     return inquirer
       .prompt([
         {
@@ -108,22 +114,19 @@ const addRoles = () => {
           validate: value => (isNaN(value) ? "Enter a number." : true)
         },
         {
-          name: "departmentName",
+          name: "departmentID",
           type: "list",
           message: "Which department does this role belong to?",
           choices: departmentNames
         }
       ])
       .then(answer => {
-        const matchedDept = results.find(
-          row => row.department_name === answer.departmentName
-        );
         return connection.query(
           "INSERT INTO role SET ?",
           {
             title: answer.roleTitle,
             salary: answer.salary,
-            department_id: matchedDept.id
+            department_id: answer.departmentID
           },
           err => {
             if (err) {
@@ -138,41 +141,83 @@ const addRoles = () => {
   });
 };
 
-// const addEmployees = () => {
-//   return connection.query("SELECT * FROM department AND role", (err, results) => {
-//     if (err) {
-//       throw err;
-//     }
-//     const departmentNames = results.map(row => row.department_name);
-//     const roleNames = results.map(row => row.title);
+// add employees
+const addEmployees = () => {
+  connection.query("SELECT title, id FROM role", (err, roles) => {
+    if (err) {
+      throw err;
+    }
+    const roleNames = roles.map(row => {
+      return {
+        name: row.title,
+        value: row.id
+      };
+    });
 
-//     return inquirer
-//     .prompt([
-//       {
-//         name: "employeeFirst",
-//         type: "input",
-//         message: "What is the employees first name?"
-//       },
-//       {
-//         name: "employeeLast",
-//         type: "input",
-//         message: "What is the employees last name?"
-//       },
-//       {
-//         name: "salary",
-//         type: "input",
-//         message: "What is role's salary?",
-//         validate: value => (isNaN(value) ? "Enter a number." : true)
-//       },
-//       {
-//         name: "departmentName",
-//         type: "list",
-//         message: "Which department does this role belong to?",
-//         choices: departmentNames
-//       }
-//     ])
-//   });
-// }
+    connection.query(
+      "SELECT id, concat(first_name, ' ', last_name) AS name FROM employee",
+      (err, employees) => {
+        if (err) {
+          throw err;
+        }
+        const managerNames = employees.map(row => {
+          return {
+            name: row.name,
+            value: row.id
+          };
+        });
+        managerNames.unshift({
+          name: "No Manager",
+          value: null
+        });
+        return inquirer
+          .prompt([
+            {
+              name: "employeeFirst",
+              type: "input",
+              message: "What is the employee's first name?"
+            },
+            {
+              name: "employeeLast",
+              type: "input",
+              message: "What is the employee's last name?"
+            },
+            {
+              name: "roleID",
+              type: "list",
+              message: "What is the employee's role?",
+              choices: roleNames
+            },
+            {
+              name: "managerID",
+              type: "list",
+              message: "Who does this employee report to?",
+              choices: managerNames
+            }
+          ])
+          .then(answer => {
+            return connection.query(
+              "INSERT INTO employee SET ?",
+              {
+                first_name: answer.employeeFirst,
+                last_name: answer.employeeLast,
+                role_id: answer.roleID,
+                manager_id: answer.managerID
+              },
+              err => {
+                if (err) {
+                  throw err;
+                }
+                console.log("Your employee was added successfully!");
+                // re-prompt the user for their next action
+                return start();
+              }
+            );
+          });
+      }
+    );
+  });
+};
 
 // view department
 const viewDepartments = () => {

@@ -7,16 +7,15 @@ VALUES (1, "Lead Engineer", 100000, 1), (2, "Software Engineer", 100000, 1),
 (6, "Sales Rep", 60000, 2), (7, "VP of Marketing", 100000, 5), (8, "Marketing rep", 100000, 5);
 
 INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
-VALUES (1, "John", "Kaplanis", 1, 4), (2, "Amber", "Kaplanis", 2, 1),
+VALUES (1, "John", "Kaplanis", 1, null), (2, "Amber", "Kaplanis", 2, 1),
 (3, "Michael", "Scott", 3, null), (4, "Jim", "Norton", 7, 3),
-(5, "James ", "Benson", 5, 3), (6, "Dave", "Smith", 6, 5),
-(7, "Rory", "Bloch", 8, 7), (8, "Joe", "Cosmano", 4, 3);
+(5, "James", "Benson", 5, 3), (6, "Dave", "Smith", 6, 5),
+(7, "Joe", "Cosmano", 4, 3), (8, "Rory", "Bloch", 8, 7);
 
 
--- produces a report that includes the managers name next to who they manage, ordered by
--- employee id. 
+-- view all employees
 SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.department_name, 
-managers.first_name as manager_first_name, managers.last_name as manager_last_name 
+concat(managers.first_name, " ", managers.last_name) as manager
 FROM employee 
 JOIN employee as managers ON employee.manager_id = managers.id
 JOIN role ON employee.role_id = role.id 
