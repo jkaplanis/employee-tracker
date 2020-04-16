@@ -13,6 +13,7 @@ const connection = mysql.createConnection({
   database: "employeeDB"
 });
 
+// start connection to database
 connection.connect(err => {
   if (err) {
     throw err;
@@ -21,6 +22,7 @@ connection.connect(err => {
   start();
 });
 
+// Choose next answer
 const start = () => {
   return inquirer
     .prompt({

@@ -11,13 +11,3 @@ VALUES (1, "John", "Kaplanis", 1, null), (2, "Amber", "Kaplanis", 2, 1),
 (3, "Michael", "Scott", 3, null), (4, "Jim", "Norton", 7, 3),
 (5, "James", "Benson", 5, 3), (6, "Dave", "Smith", 6, 5),
 (7, "Joe", "Cosmano", 4, 3), (8, "Rory", "Bloch", 8, 7);
-
-
--- view all employees
-SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.department_name, 
-concat(managers.first_name, " ", managers.last_name) as manager
-FROM employee 
-JOIN employee as managers ON employee.manager_id = managers.id
-JOIN role ON employee.role_id = role.id 
-JOIN department ON role.department_id = department.id
-ORDER BY employee.id;
